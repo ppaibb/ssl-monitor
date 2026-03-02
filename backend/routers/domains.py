@@ -186,7 +186,7 @@ async def check_now(user: User = Depends(get_current_user), db: AsyncSession = D
     results = await check_certs_concurrent(targets)
 
     now = datetime.utcnow()
-    out = []
+    cr_list = []
     for res in results:
         cr = CertResult(
             user_id=user.id,
@@ -195,9 +195,7 @@ async def check_now(user: User = Depends(get_current_user), db: AsyncSession = D
             **{k: v for k, v in res.items() if k != "san"},
         )
         db.add(cr)
-        res["san"] = res.get("san") or []
-        res["checked_at"] = now
-        out.append(res)
+        cr_list.append(cr)
     await db.flush()
     # 保留最近 60 条历史
     for res in results:
@@ -209,7 +207,9 @@ async def check_now(user: User = Depends(get_current_user), db: AsyncSession = D
         )
         await db.execute(delete(CertResult).where(CertResult.id.in_(subq)))
     await db.commit()
-    return out
+    for cr in cr_list:
+        await db.refresh(cr)
+    return cr_list
 
 
 @router.post("/batch", response_model=dict)
@@ -344,7 +344,7 @@ async def check_batch(
     results = await check_certs_concurrent(targets)
 
     now = datetime.utcnow()
-    out = []
+    cr_list = []
     
     # 保存结果并触发告警机制
     for res in results:
@@ -355,9 +355,7 @@ async def check_batch(
             **{k: v for k, v in res.items() if k != "san"},
         )
         db.add(cr)
-        res["san"] = res.get("san") or []
-        res["checked_at"] = now
-        out.append(res)
+        cr_list.append(cr)
     
     await db.flush()
     
@@ -383,10 +381,13 @@ async def check_batch(
                 select(Webhook).where(Webhook.user_id == user.id, Webhook.enabled == True)
             )
             global_whs = global_wh_result.scalars().all()
-            await notify_single(domain_whs, global_whs, out[i])
+            res_with_san = dict(res, san=res.get("san") or [], checked_at=now)
+            await notify_single(domain_whs, global_whs, res_with_san)
 
     await db.commit()
-    return out
+    for cr in cr_list:
+        await db.refresh(cr)
+    return cr_list
 
 
 # ---------- 域名级 Webhook 绑定 ----------
