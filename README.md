@@ -60,7 +60,7 @@ ssl-monitor/
 │   ├── .env.example
 │   └── ssl_monitor.db       # SQLite 数据库文件
 │
-├── frontend-v2/
+├── frontend/
 │   ├── src/
 │   │   ├── api.ts           # Axios API 封装 & TypeScript 类型
 │   │   ├── views/
@@ -96,7 +96,7 @@ uvicorn main:app --reload --port 8000
 ### 前端
 
 ```bash
-cd frontend-v2
+cd frontend
 npm install
 npm run dev                   # 开发模式，访问 http://localhost:5173
 ```

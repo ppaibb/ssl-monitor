@@ -11,7 +11,7 @@
 
 **涉及文件**:
 - [public.py](file:///c:/workspace/ssl-monitor/backend/routers/public.py) — 后端 API
-- [PublicStatus.vue](file:///c:/workspace/ssl-monitor/frontend-v2/src/views/PublicStatus.vue) — 前端页面
+- [PublicStatus.vue](file:///c:/workspace/ssl-monitor/frontend/src/views/PublicStatus.vue) — 前端页面
 
 ### 2. 域名站点名称（Name Alias）
 - 数据库新增 `name` 列

@@ -65,7 +65,7 @@ pm2 save && pm2 startup
 ### 1. 安装依赖
 
 ```bash
-cd frontend-v2
+cd frontend
 npm install
 ```
 

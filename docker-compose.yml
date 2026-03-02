@@ -18,7 +18,7 @@ services:
       - "8000:8000"
 
   frontend:
-    build: ./frontend-v2
+    build: ./frontend
     container_name: ssl-monitor-frontend
     restart: always
     ports:
