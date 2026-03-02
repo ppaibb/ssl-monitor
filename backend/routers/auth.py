@@ -122,7 +122,7 @@ async def github_callback(code: str, db: AsyncSession = Depends(get_db)):
                 "code": code,
             },
             headers={"Accept": "application/json"},
-            timeout=10,
+            timeout=30,
         )
     data = r.json()
     access_token = data.get("access_token")
@@ -134,7 +134,7 @@ async def github_callback(code: str, db: AsyncSession = Depends(get_db)):
         user_r = await client.get(
             "https://api.github.com/user",
             headers={"Authorization": f"Bearer {access_token}", "Accept": "application/json"},
-            timeout=10,
+            timeout=30,
         )
         emails_r = await client.get(
             "https://api.github.com/user/emails",
