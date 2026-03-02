@@ -96,10 +96,12 @@ async def change_password(
 async def github_login():
     if not settings.GITHUB_CLIENT_ID:
         raise HTTPException(status_code=501, detail="GitHub OAuth 未配置")
+    callback = f"{settings.FRONTEND_URL}/api/auth/github/callback"
     url = (
         f"https://github.com/login/oauth/authorize"
         f"?client_id={settings.GITHUB_CLIENT_ID}"
         f"&scope=user:email"
+        f"&redirect_uri={callback}"
     )
     from fastapi.responses import RedirectResponse
     return RedirectResponse(url)
