@@ -8,10 +8,12 @@ services:
     volumes:
       # 数据库持久化，防止容器重建后数据丢失
       - ./data:/app/data
+    env_file:
+      # 环境变量从文件读取，修改后 restart 即可生效，无需重新构建
+      - ./backend/.env
     environment:
+      # 覆盖数据库路径，确保写入持久化挂载目录
       - DATABASE_URL=sqlite+aiosqlite:///./data/ssl_monitor.db
-      - SECRET_KEY=${SECRET_KEY:-please-change-this-secret-key}
-      - FRONTEND_URL=http://localhost
     ports:
       - "8000:8000"
 
