@@ -2,7 +2,7 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { api, type PublicStatusItem } from '../api'
 import { Message } from '@arco-design/web-vue'
-import { IconMoonFill, IconSunFill, IconSafe } from '@arco-design/web-vue/es/icon'
+import { IconMoonFill, IconSunFill, IconSafe, IconGithub } from '@arco-design/web-vue/es/icon'
 
 const domains = ref<PublicStatusItem[]>([])
 const loading = ref(true)
@@ -33,6 +33,10 @@ function toggleDark() {
   } else {
     document.body.removeAttribute('arco-theme')
   }
+}
+
+function openGitHub() {
+  window.open('https://github.com/ppaibb/ssl-monitor', '_blank')
 }
 
 onMounted(() => {
@@ -110,6 +114,9 @@ const filteredDomains = computed(() => {
         <span class="title">SSL 证书运行状态监测</span>
       </div>
       <div class="header-right">
+        <a-button type="text" shape="circle" @click="openGitHub">
+          <template #icon><icon-github /></template>
+        </a-button>
         <a-button type="text" shape="circle" @click="toggleDark">
           <template #icon>
             <icon-moon-fill v-if="!isDark" />

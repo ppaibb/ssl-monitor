@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from database import get_db
-from models import Domain, CertResult
+from models import Domain, CertResult, User
 from schemas import PublicStatusOut
 
 logger = logging.getLogger(__name__)
@@ -41,12 +41,18 @@ async def get_public_status(db: AsyncSession = Depends(get_db)):
     Get all domains and their most recent check results.
     The domain string will be masked for public viewing.
     """
-    domain_result = await db.execute(select(Domain))
+    # 只展示管理员用户的域名
+    admin_result = await db.execute(select(User).where(User.is_admin == True))
+    admin_ids = [u.id for u in admin_result.scalars().all()]
+    
+    domain_result = await db.execute(select(Domain).where(Domain.user_id.in_(admin_ids)))
     domains = domain_result.scalars().all()
     
     public_stats = []
     
-    cert_result_res = await db.execute(select(CertResult))
+    cert_result_res = await db.execute(
+        select(CertResult).where(CertResult.user_id.in_(admin_ids))
+    )
     results = cert_result_res.scalars().all()
     
     # Group results by domain and port to find the latest
