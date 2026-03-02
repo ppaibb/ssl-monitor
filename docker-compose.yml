@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  backend:
+    build: ./backend
+    container_name: ssl-monitor-backend
+    restart: always
+    volumes:
+      # 数据库持久化，防止容器重建后数据丢失
+      - ./data:/app/data
+    environment:
+      - DATABASE_URL=sqlite+aiosqlite:///./data/ssl_monitor.db
+      - SECRET_KEY=${SECRET_KEY:-please-change-this-secret-key}
+      - FRONTEND_URL=http://localhost
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: ./frontend-v2
+    container_name: ssl-monitor-frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
